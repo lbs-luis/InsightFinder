@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Tabela para armazenar as publicadoras (Globo, Le Monde, etc.)
+model Media {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique @db.VarChar(255)
+  logo_url  String?
+  base_url  String    @db.VarChar(255)
+  is_active Boolean   @default(true)
+  articles  Article[]
+  sources   Source[]
+}
+
+// Tabela para armazenar as categorias globais (Política, Economia, Tecnologia, etc.)
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique @db.VarChar(100)
+  articles Article[]
+  sources  Source[]
+}
+
+// Tabela que mapeia o feed RSS a uma Mídia e Categoria
+model Source {
+  id          Int @id @default(autoincrement())
+  media_id    Int
+  category_id Int
+
+  rss_url     String    @unique @db.VarChar(255)
+  description String    @unique @db.VarChar(255)
+  is_active   Boolean   @default(true)
+  articles    Article[]
+
+  media    Media    @relation(fields: [media_id], references: [id])
+  category Category @relation(fields: [category_id], references: [id])
+}
+
+// Tabela para armazenar os artigos coletados
+model Article {
+  id               Int      @id @default(autoincrement())
+  media_id         Int
+  category_id      Int
+  source_id        Int
+  title            String   @db.Text
+  link             String   @unique @db.Text
+  content          String   @db.Text
+  publication_date DateTime @db.Timestamptz()
+  created_at       DateTime @default(now()) @db.Timestamptz()
+
+  media    Media    @relation(fields: [media_id], references: [id])
+  category Category @relation(fields: [category_id], references: [id])
+  source   Source   @relation(fields: [source_id], references: [id])
+}
