@@ -13,8 +13,8 @@ export function AppHeader() {
           <Image
             alt="Insight Finder Logo"
             src="/logo.png"
-            width={27}
-            height={27}
+            width={35}
+            height={35}
           />
           <h1 className="text-xl font-bold text-white">Insight Finder</h1>
         </div>

@@ -9,9 +9,9 @@ import {
   Smartphone,
 } from "lucide-react";
 import { useState } from "react";
-import { cn } from "../lib/cn";
 import { useSideMenuStore } from "../store/side-menu";
 import { ICategory } from "../types/category.types";
+import { cn } from "../utils/cn";
 
 export function CategoryBar() {
   const { isOpen, setOpen } = useSideMenuStore();
