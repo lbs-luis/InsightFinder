@@ -48,6 +48,8 @@ model Article {
   category_id      Int
   source_id        Int
   title            String   @db.Text
+  subtitle         String   @db.Text
+  banner_url       String   @db.Text
   link             String   @unique @db.Text
   content          String   @db.Text
   publication_date DateTime @db.Timestamptz()

@@ -1,7 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { load } from 'cheerio';
 import { MediaRssSourceDto } from 'src/dto/sources/source.dto';
-import { RssFeed } from 'src/interfaces/rss';
+import {
+  G1RssItem,
+  LeMondeRssItem,
+  RssFeed,
+  RssItemBase,
+} from 'src/interfaces/rss';
 import axiosRssClient from 'src/lib/axios-rss-client';
 import * as xml2js from 'xml2js';
 import { PrismaService } from '../prisma/prisma.service';
@@ -62,16 +68,8 @@ export class CollectorService {
       let newArticles = 0;
       let ignoredArticles = 0;
 
-      for (const article of articles) {
-        const normalizedArticle = {
-          title: article.title,
-          link: article.link,
-          content: article.description,
-          publication_date: new Date(article.pubDate),
-          media_id: source.media_id,
-          category_id: source.category_id,
-          source_id: source.id,
-        };
+      for (const rawArticle of articles) {
+        const normalizedArticle = this.normalizeArticle(rawArticle, source);
 
         const existingArticle = await this.prisma.article.findUnique({
           where: {
@@ -81,7 +79,12 @@ export class CollectorService {
 
         if (!existingArticle) {
           await this.prisma.article.create({
-            data: normalizedArticle,
+            data: {
+              ...normalizedArticle,
+              media_id: source.media_id,
+              category_id: source.category_id,
+              source_id: source.id,
+            },
           });
           newArticles += 1;
           this.logger.log(`Artigo salvo: ${normalizedArticle.title}`);
@@ -101,5 +104,53 @@ export class CollectorService {
         `Erro ao processar a fonte ${source.description}: ${error}`,
       );
     }
+  }
+  private normalizeArticle(rawArticle: RssItemBase, source: MediaRssSourceDto) {
+    let subtitle = '';
+    let banner_url = '';
+    let content = rawArticle.description;
+
+    if (source.media_id === 1 /* G1 */) {
+      const g1Article = rawArticle as G1RssItem;
+      subtitle = g1Article['atom:subtitle'] || '';
+
+      try {
+        const $ = load(g1Article.description);
+        const img = $('img');
+        if (img.length) {
+          banner_url = img.attr('src') || '';
+          img.remove();
+          content = $('body').html()?.trim() || g1Article.description;
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          this.logger.warn(
+            `Falha ao parsear HTML para banner G1: ${e.message}`,
+          );
+        } else {
+          this.logger.warn(
+            'Falha ao parsear HTML para banner G1: Erro desconhecido.',
+          );
+        }
+      }
+    } else if (source.media_id === 2 /* Le Monde */) {
+      const leMondeArticle = rawArticle as LeMondeRssItem;
+      subtitle = leMondeArticle.description;
+      if (
+        leMondeArticle['media:content'] &&
+        leMondeArticle['media:content'].$
+      ) {
+        banner_url = leMondeArticle['media:content'].$.url || '';
+      }
+    }
+
+    return {
+      title: rawArticle.title,
+      link: rawArticle.link,
+      content: content,
+      publication_date: new Date(rawArticle.pubDate),
+      subtitle,
+      banner_url,
+    };
   }
 }
