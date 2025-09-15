@@ -11,9 +11,13 @@ Bem-vindo ao frontend do projeto Insight Finder AI. Esta aplicação web, constr
 - **React**: Biblioteca JavaScript para construir a interface de usuário.
 - **Tailwind CSS**: Framework CSS para o design e a estilização da interface.
 
+##
+
 ### Princípios de Design
 
 O projeto foi construído com uma abordagem **Mobile First**, garantindo uma experiência de usuário otimizada em dispositivos móveis. A arquitetura de design foi pensada para ser responsiva e intuitiva.
+
+##
 
 ### Como Rodar o Projeto
 
