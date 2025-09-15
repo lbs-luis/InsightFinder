@@ -49,3 +49,9 @@ O comando db:init irá criar a base de dados e popular as tabelas com as fontes 
 O serviço de coleta está agendado para rodar a cada hora. Para testes, você pode acionar a coleta manualmente via:
 
     GET: http://localhost:3001/collector/run.
+
+5. Iniciar
+
+Para executar a api após seguir os passos anteriores basta executar o comando:
+
+    pnpm start:dev # ou npm run start:dev
