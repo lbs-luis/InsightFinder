@@ -1,7 +1,8 @@
 ## IF Backend
 
 <p align="center">
-<a  href="https://github.com/lbs-luis/InsightFinder/tree/main/apps/frontend">Readme do Frontend</a> | <a  href="https://github.com/lbs-luis/InsightFinder">Voltar para a Raiz</a>
+<a  href="https://github.com/lbs-luis/InsightFinder">Home</a> | 
+<a  href="https://github.com/lbs-luis/InsightFinder/tree/main/apps/frontend">Frontend</a>
 </p>
 
 <br>

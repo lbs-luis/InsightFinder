@@ -1,6 +1,6 @@
 ## IF Frontend
 
-<p align="center"> <a href="https://github.com/lbs-luis/InsightFinder/tree/main/apps/backend">Readme do Backend</a> | <a href="https://github.com/lbs-luis/InsightFinder/tree/main">Voltar para a Raiz</a> </p>
+<p align="center"><a href="https://github.com/lbs-luis/InsightFinder/tree/main">Home</a> | <a href="https://github.com/lbs-luis/InsightFinder/tree/main/apps/backend">Backend</a></p>
 <br>
 
 Bem-vindo ao frontend do projeto Insight Finder AI. Esta aplicação web, construída com Next.js, é uma plataforma responsiva projetada para consumir e exibir as notícias coletadas pelo backend.
