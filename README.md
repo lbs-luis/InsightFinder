@@ -2,7 +2,9 @@
 ## Insight Finder
 <div align="center"><img src="https://github.com/lbs-luis/InsightFinder/blob/main/media/white-logo.png?raw=true"  width="200" height="200" /></div>
 
-<p align="center"><a href="https://github.com/lbs-luis/InsightFinder/tree/main/apps/frontend">Frontend</a> | <a href="https://github.com/lbs-luis/InsightFinder/tree/main/apps/backend">Backend</a> </p>
+<p align="center">
+<a href="https://github.com/users/lbs-luis/projects/3">Board</a> |
+<a href="https://github.com/lbs-luis/InsightFinder/tree/main/apps/frontend">Frontend</a> | <a href="https://github.com/lbs-luis/InsightFinder/tree/main/apps/backend">Backend</a> </p>
 
 ### A Visão
 
