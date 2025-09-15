@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## IF Frontend
 
-## Getting Started
+<p align="center"> <a href="https://github.com/lbs-luis/InsightFinder/tree/main/apps/backend">Readme do Backend</a> | <a href="https://github.com/lbs-luis/InsightFinder/tree/main">Voltar para a Raiz</a> </p>
+<br>
 
-First, run the development server:
+Bem-vindo ao frontend do projeto Insight Finder AI. Esta aplicação web, construída com Next.js, é uma plataforma responsiva projetada para consumir e exibir as notícias coletadas pelo backend.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Tecnologias Principais
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Next.js**: Framework React para renderização do lado do servidor (SSR).
+- **React**: Biblioteca JavaScript para construir a interface de usuário.
+- **Tailwind CSS**: Framework CSS para o design e a estilização da interface.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Princípios de Design
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O projeto foi construído com uma abordagem **Mobile First**, garantindo uma experiência de usuário otimizada em dispositivos móveis. A arquitetura de design foi pensada para ser responsiva e intuitiva.
 
-## Learn More
+### Como Rodar o Projeto
 
-To learn more about Next.js, take a look at the following resources:
+Para rodar o projeto, é necessário que o backend já esteja em execução para fornecer os dados.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Instalar Dependências
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Na pasta `/apps/frontend`, instale as dependências usando o gerenciador de pacotes da sua preferência.
 
-## Deploy on Vercel
+    1. cd apps/frontend
+    2. pnpm install # ou npm install
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Iniciar a Aplicação
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Inicie o servidor de desenvolvimento do Next.js.
+
+    pnpm dev # ou npm run dev
