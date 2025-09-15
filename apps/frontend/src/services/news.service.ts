@@ -12,10 +12,11 @@ export async function getNewsMetaData(page: number = 1) {
         "Content-Type": "application/json",
         page: String(page),
       },
-      next: {
-        tags: ["news"],
-        revalidate: 60 * 30, // 30 minutos
-      },
+      cache: "no-store",
+      // next: {
+      //   tags: ["news"],
+      //   revalidate: 60 * 30, // 30 minutos
+      // },
     });
 
     if (!response.ok) {
