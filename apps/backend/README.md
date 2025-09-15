@@ -8,15 +8,15 @@
 
 Bem-vindo ao backend do projeto Insight Finder AI. Esta API, construída com NestJS, é responsável pela coleta de notícias e por servir os dados para o frontend.
 
-Tecnologias Principais
+### Tecnologias Principais
 
-    NestJS: Framework Node.js para a API RESTful.
+- **NestJS**: Framework Node.js para a API RESTful.
 
-    PostgreSQL: Banco de dados relacional que roda em um contêiner Docker.
+- **PostgreSQL**: Banco de dados relacional que roda em um contêiner Docker.
 
-    Prisma: ORM para gerenciar o esquema e as migrações do banco de dados.
+- **Prisma**: ORM para gerenciar o esquema e as migrações do banco de dados.
 
-    Coletor RSS: Serviço assíncrono para buscar notícias de fontes homologadas.
+- **Coletor RSS**: Serviço assíncrono para buscar notícias de fontes homologadas.
 
 ##
 
