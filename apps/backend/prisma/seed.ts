@@ -56,6 +56,20 @@ async function seedMedias() {
         'https://www.lemonde.fr/bucket/resources/front/static/img/logos/pwa-180.png',
       is_active: true,
     },
+    {
+      name: 'Folha de S.Paulo',
+      base_url: 'https://www.folha.uol.com.br/',
+      logo_url:
+        'https://f.i.uol.com.br/hunting/folha/1/common/icons/favicon-192.png',
+      is_active: true,
+    },
+    {
+      name: 'Gazeta do Povo',
+      base_url: 'https://www.gazetadopovo.com.br/',
+      logo_url:
+        'https://www.gazetadopovo.com.br/assets/images/icons/favicon-gp-192x192.png',
+      is_active: true,
+    },
   ];
 
   await prisma.media.createMany({
@@ -77,15 +91,29 @@ async function seedSources() {
     {
       description: 'G1:Política',
       rss_url: 'https://g1.globo.com/dynamo/politica/mensalao/rss2.xml',
-      is_active: true,
+      is_active: false,
       media_id: 1,
       category_id: 1,
     },
     {
       description: 'Le Monde:Política',
       rss_url: 'https://www.lemonde.fr/politique/rss_full.xml',
-      is_active: true,
+      is_active: false,
       media_id: 2,
+      category_id: 1,
+    },
+    {
+      description: 'Folha de S.Paulo:Política',
+      rss_url: 'https://feeds.folha.uol.com.br/poder/rss091.xml',
+      is_active: false,
+      media_id: 3,
+      category_id: 1,
+    },
+    {
+      description: 'Gazeta do Povo:Política',
+      rss_url: 'https://www.gazetadopovo.com.br/feed/rss/mundo.xml',
+      is_active: true,
+      media_id: 4,
       category_id: 1,
     },
   ];

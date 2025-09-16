@@ -3,7 +3,9 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { load } from 'cheerio';
 import { MediaRssSourceDto } from 'src/dto/sources/source.dto';
 import {
+  FolhaRssItem,
   G1RssItem,
+  GazetaRssItem,
   LeMondeRssItem,
   RssFeed,
   RssItemBase,
@@ -142,6 +144,50 @@ export class CollectorService {
       ) {
         banner_url = leMondeArticle['media:content'].$.url || '';
       }
+    } else if (source.media_id === 3 /* Folha de S.Paulo */) {
+      const folhaArticle = rawArticle as FolhaRssItem;
+      subtitle = folhaArticle['atom:subtitle'] || '';
+      try {
+        const $ = load(folhaArticle.description);
+        const img = $('img');
+        if (img.length) {
+          banner_url = img.attr('src') || '';
+          img.remove();
+          content = $('body').html()?.trim() || folhaArticle.description;
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          this.logger.warn(
+            `Falha ao parsear HTML para banner Folha: ${e.message}`,
+          );
+        } else {
+          this.logger.warn(
+            'Falha ao parsear HTML para banner Folha: Erro desconhecido.',
+          );
+        }
+      }
+    } else if (source.media_id === 4 /* Gazeta do Povo */) {
+      const gazetaArticle = rawArticle as GazetaRssItem;
+      try {
+        const $ = load(gazetaArticle.description);
+        subtitle = $('body').text().trim() || '';
+        if (gazetaArticle['enclosure'] && gazetaArticle['enclosure'].$) {
+          banner_url = gazetaArticle['enclosure'].$.url || '';
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          this.logger.warn(
+            `Falha ao parsear HTML da Gazeta do Povo: ${e.message}`,
+          );
+        } else {
+          this.logger.warn(
+            'Falha ao parsear HTML da Gazeta do Povo: Erro desconhecido.',
+          );
+        }
+        subtitle = gazetaArticle.description;
+        banner_url = '';
+      }
+      content = gazetaArticle.description;
     }
 
     return {
