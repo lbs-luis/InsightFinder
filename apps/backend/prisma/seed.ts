@@ -1,5 +1,26 @@
 import { Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { rss_categories } from '../rss/categories';
+import { rss_medias } from '../rss/medias';
+import {
+  folha_de_sp_ciencia_e_saude,
+  folha_de_sp_economia,
+  folha_de_sp_politica,
+} from '../rss/sources/folha_de_sp';
+import {
+  g1_ciencia_e_saude,
+  g1_economia,
+  g1_politica,
+} from '../rss/sources/g1';
+import {
+  gazeta_do_povo_economia,
+  gazeta_do_povo_politica,
+} from '../rss/sources/gazeta_do_povo';
+import {
+  lemonde_ciencia_e_saude,
+  lemonde_economia,
+  lemonde_politica,
+} from '../rss/sources/lemonde';
 
 const prisma = new PrismaClient();
 const logger = new Logger('PrismaSeed');
@@ -18,11 +39,7 @@ function checkRegistration({
 }
 
 async function seedCategories() {
-  const categoryData = [
-    {
-      name: 'Política',
-    },
-  ];
+  const categoryData = rss_categories;
 
   await prisma.category.createMany({
     skipDuplicates: true,
@@ -41,36 +58,7 @@ async function seedCategories() {
 }
 
 async function seedMedias() {
-  const mediaData = [
-    {
-      name: 'G1',
-      base_url: 'https://g1.globo.com/',
-      logo_url:
-        'https://s2-g1.glbimg.com/LsuKXSXhHyq6vHO3DX_fXzijkCg=/196x196/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2021/H/w/YbA657S3aYVfC0P9wboQ/g1-favicon.png',
-      is_active: true,
-    },
-    {
-      name: 'Le Monde',
-      base_url: 'https://www.lemonde.fr/',
-      logo_url:
-        'https://www.lemonde.fr/bucket/resources/front/static/img/logos/pwa-180.png',
-      is_active: true,
-    },
-    {
-      name: 'Folha de S.Paulo',
-      base_url: 'https://www.folha.uol.com.br/',
-      logo_url:
-        'https://f.i.uol.com.br/hunting/folha/1/common/icons/favicon-192.png',
-      is_active: true,
-    },
-    {
-      name: 'Gazeta do Povo',
-      base_url: 'https://www.gazetadopovo.com.br/',
-      logo_url:
-        'https://www.gazetadopovo.com.br/assets/images/icons/favicon-gp-192x192.png',
-      is_active: true,
-    },
-  ];
+  const mediaData = rss_medias;
 
   await prisma.media.createMany({
     skipDuplicates: true,
@@ -88,34 +76,20 @@ async function seedMedias() {
 
 async function seedSources() {
   const sourceData = [
-    {
-      description: 'G1:Política',
-      rss_url: 'https://g1.globo.com/dynamo/politica/mensalao/rss2.xml',
-      is_active: false,
-      media_id: 1,
-      category_id: 1,
-    },
-    {
-      description: 'Le Monde:Política',
-      rss_url: 'https://www.lemonde.fr/politique/rss_full.xml',
-      is_active: false,
-      media_id: 2,
-      category_id: 1,
-    },
-    {
-      description: 'Folha de S.Paulo:Política',
-      rss_url: 'https://feeds.folha.uol.com.br/poder/rss091.xml',
-      is_active: false,
-      media_id: 3,
-      category_id: 1,
-    },
-    {
-      description: 'Gazeta do Povo:Política',
-      rss_url: 'https://www.gazetadopovo.com.br/feed/rss/mundo.xml',
-      is_active: true,
-      media_id: 4,
-      category_id: 1,
-    },
+    // Política
+    ...g1_politica,
+    ...lemonde_politica,
+    ...folha_de_sp_politica,
+    ...gazeta_do_povo_politica,
+    // Ciência e Saúde
+    ...g1_ciencia_e_saude,
+    ...lemonde_ciencia_e_saude,
+    ...folha_de_sp_ciencia_e_saude,
+    // Economia
+    ...g1_economia,
+    ...lemonde_economia,
+    ...folha_de_sp_economia,
+    ...gazeta_do_povo_economia,
   ];
   await prisma.source.createMany({
     skipDuplicates: true,

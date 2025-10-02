@@ -12,7 +12,10 @@ export class NewsController {
   constructor(private readonly newsService: NewsService) {}
 
   @Get()
-  async getNews(@Headers('page') pageHeader: string) {
+  async getNews(
+    @Headers('page') pageHeader: string,
+    @Headers('category') newsCategory?: string,
+  ) {
     try {
       const page = parseInt(pageHeader, 10);
       if (isNaN(page) || page < 1) {
@@ -21,8 +24,8 @@ export class NewsController {
           HttpStatus.BAD_REQUEST,
         );
       }
-
-      return await this.newsService.getPaginatedNews(page);
+      if (newsCategory === 'Todos') newsCategory = undefined; // Quando for todos não aplica filtragem
+      return await this.newsService.getPaginatedNews(page, newsCategory);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ArticleResponse } from 'src/interfaces/news-response.types';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -8,8 +8,15 @@ export class NewsService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async getPaginatedNews(page: number) {
+  async getPaginatedNews(page: number, newsCategory?: string) {
     const skip = (page - 1) * this.pageSize;
+
+    const whereClause: { category_id?: number } = {};
+
+    if (newsCategory) {
+      const category = await this.findCategory(newsCategory);
+      whereClause.category_id = category.id;
+    }
 
     const articles = await this.prisma.article.findMany({
       skip: skip,
@@ -17,6 +24,7 @@ export class NewsService {
       orderBy: {
         publication_date: 'desc',
       },
+      where: whereClause,
       select: {
         id: true,
         title: true,
@@ -39,5 +47,19 @@ export class NewsService {
     });
 
     return articles as ArticleResponse[];
+  }
+
+  private async findCategory(category: string) {
+    const categoryUnique = await this.prisma.category.findUnique({
+      where: {
+        name: category,
+      },
+    });
+
+    if (!categoryUnique) {
+      throw new NotFoundException('Categoria não encontrada');
+    }
+
+    return categoryUnique;
   }
 }
