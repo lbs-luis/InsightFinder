@@ -2,7 +2,10 @@
 
 const API_BASE_URL = "http://localhost:3001";
 
-export async function getNewsMetaData(page: number = 1) {
+export async function getNewsMetaData(
+  page: number = 1,
+  category: NewCategoriesEnum = NewCategoriesEnum.TODOS
+) {
   const url = `${API_BASE_URL}/news`;
 
   try {
@@ -11,12 +14,9 @@ export async function getNewsMetaData(page: number = 1) {
       headers: {
         "Content-Type": "application/json",
         page: String(page),
+        category: category,
       },
       cache: "no-store",
-      // next: {
-      //   tags: ["news"],
-      //   revalidate: 60 * 30, // 30 minutos
-      // },
     });
 
     if (!response.ok) {
@@ -31,6 +31,7 @@ export async function getNewsMetaData(page: number = 1) {
 }
 
 import { revalidateTag } from "next/cache";
+import { NewCategoriesEnum } from "../types/category.types";
 
 export async function revalidateNewsMetaDataCache() {
   revalidateTag("news");

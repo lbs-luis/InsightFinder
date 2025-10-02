@@ -1,31 +1,14 @@
 "use client";
-import {
-  Building2,
-  ChefHat,
-  Gamepad2,
-  Globe,
-  Heart,
-  Plane,
-  Smartphone,
-} from "lucide-react";
-import { useState } from "react";
+
+import { useNewsCategoriesStore } from "../store/news-categories";
 import { useSideMenuStore } from "../store/side-menu";
-import { ICategory } from "../types/category.types";
+
+import { categoriesList } from "../types/category.types";
 import { cn } from "../utils/cn";
 
 export function CategoryBar() {
   const { isOpen, setOpen } = useSideMenuStore();
-  const [selectedCategory, setSelectedCategory] = useState("all");
-
-  const categories: ICategory[] = [
-    { id: "all", name: "Todas", icon: Globe },
-    { id: "politics", name: "Política", icon: Building2 },
-    { id: "culinary", name: "Culinária", icon: ChefHat },
-    { id: "travel", name: "Viagens", icon: Plane },
-    { id: "health", name: "Saúde", icon: Heart },
-    { id: "tech", name: "Tecnologia", icon: Smartphone },
-    { id: "sports", name: "Esportes", icon: Gamepad2 },
-  ];
+  const { setCategory, category: selectedCategory } = useNewsCategoriesStore();
 
   return (
     <nav
@@ -35,17 +18,17 @@ export function CategoryBar() {
       )}
     >
       <div className="flex w-full max-w-7xl overflow-x-auto py-3 px-4 mx-auto space-x-1 no-scrollbar">
-        {categories.map((category) => {
+        {categoriesList.map((category, index) => {
           const Icon = category.icon;
           return (
             <button
-              key={category.id}
+              key={`category-${index}`}
               onClick={() => {
-                setSelectedCategory(category.id);
+                setCategory(category.name);
                 setOpen(false);
               }}
               className={`flex items-center space-x-2 px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
-                selectedCategory === category.id
+                selectedCategory === category.name
                   ? "bg-blue-600 text-white"
                   : "text-gray-400 hover:text-gray-200 hover:bg-gray-700"
               }`}

@@ -1,8 +1,9 @@
 "use client";
 
-import { getNewsMetaData } from "@/src/services/news.service";
 import { NewsMetaData } from "@/src/types/news.types";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { getNewsMetaData } from "../services/news.service";
+import { useNewsCategoriesStore } from "../store/news-categories";
 import { cn } from "../utils/cn";
 import { NewsCard } from "./news-card";
 
@@ -15,11 +16,12 @@ export function NewsList({ initialNews }: NewsListProps) {
   const [news, setNews] = useState<NewsMetaData[]>(initialNews);
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { category } = useNewsCategoriesStore();
 
-  const handleLoadMore = async () => {
+  const handleLoadMore = useCallback(async () => {
     setIsLoading(true);
     const nextPage = page + 1;
-    const newNews = await getNewsMetaData(nextPage);
+    const newNews = await getNewsMetaData(nextPage, category);
 
     if (newNews.length > 0) {
       setNews((prevNews) => [...prevNews, ...newNews]);
@@ -31,7 +33,23 @@ export function NewsList({ initialNews }: NewsListProps) {
     setIsLoading(false);
     setIsNewsEmpty(true);
     return;
-  };
+  }, [category, page]);
+
+  useEffect(() => {
+    const resetAndFetchFirstPage = async () => {
+      setIsLoading(true);
+      setNews([]);
+      setPage(1);
+
+      const initialNewsForCategory = await getNewsMetaData(1, category);
+
+      setNews(initialNewsForCategory);
+      setIsNewsEmpty(initialNewsForCategory.length === 0);
+      setIsLoading(false);
+    };
+
+    resetAndFetchFirstPage();
+  }, [category]);
 
   return (
     <>
