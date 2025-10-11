@@ -12,6 +12,7 @@
     "db:init": "prisma migrate reset",
     "db:migrate": "npx prisma migrate dev --name",
     "db:seed": "npx prisma db seed",
+    "ollama:pull": "ts-node ollama/pull.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:cov": "jest --coverage",
@@ -22,17 +23,21 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/schedule": "^6.0.0",
     "@prisma/client": "^6.15.0",
+    "ai": "^5.0.68",
+    "ai-sdk-ollama": "^0.12.0",
     "axios": "^1.12.1",
     "cheerio": "^1.1.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
