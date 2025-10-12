@@ -1,7 +1,8 @@
 "use client";
-import { Menu } from "lucide-react";
+import { BotMessageSquare } from "lucide-react";
 import Image from "next/image";
 import { useSideMenuStore } from "../store/side-menu";
+import { cn } from "../utils/cn";
 
 export function AppHeader() {
   const { setOpen, isOpen } = useSideMenuStore();
@@ -19,10 +20,13 @@ export function AppHeader() {
           <h1 className="text-xl font-bold text-white">Insight Finder</h1>
         </div>
         <button
-          className="text-app-text size-9 rounded-md hover:bg-app-text/20 cursor-pointer block sm:hidden"
+          className={cn(
+            " size-9 rounded-md hover:bg-app-text/20 cursor-pointer block",
+            isOpen ? "text-blue-500" : "text-app-text"
+          )}
           onClick={() => setOpen(!isOpen)}
         >
-          <Menu className="size-5 m-auto" />
+          <BotMessageSquare className="size-6 m-auto" />
         </button>
       </div>
     </header>

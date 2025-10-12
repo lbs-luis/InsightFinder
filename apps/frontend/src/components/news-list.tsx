@@ -52,9 +52,13 @@ export function NewsList({ initialNews }: NewsListProps) {
   }, [category]);
 
   return (
-    <>
-      {news.length > 0 &&
-        news.map((article) => <NewsCard key={article.id} article={article} />)}
+    <section className="flex flex-col h-[calc(100dvh-155px)] overflow-y-scroll gap-4 p-4 pt-0 mt-4 items-center w-full">
+      <div className="flex flex-col max-w-7xl w-ful gap-4 w-full">
+        {news.length > 0 &&
+          news.map((article, index) => (
+            <NewsCard key={`${article.id}-${index}`} article={article} />
+          ))}
+      </div>
 
       <button
         className={cn(
@@ -66,6 +70,6 @@ export function NewsList({ initialNews }: NewsListProps) {
       >
         {isLoading ? "Carregando..." : "Carregar mais notícias"}
       </button>
-    </>
+    </section>
   );
 }

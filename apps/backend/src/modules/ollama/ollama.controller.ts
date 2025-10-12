@@ -7,7 +7,8 @@ export class OllamaController {
   constructor(private readonly ollamaService: OllamaService) {}
 
   @Post('message')
-  message(@Body() body: OllamaMessageDTO) {
-    return this.ollamaService.llama3(body.message);
+  async message(@Body() body: OllamaMessageDTO) {
+    const response = await this.ollamaService.modelGenerateText(body.prompt);
+    return { message: response };
   }
 }

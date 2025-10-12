@@ -6,6 +6,6 @@ type SideMenuStore = {
 };
 
 export const useSideMenuStore = create<SideMenuStore>((set) => ({
-  isOpen: true,
+  isOpen: false,
   setOpen: (isOpen: boolean) => set({ isOpen }),
 }));

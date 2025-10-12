@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { generateText, stepCountIs, tool } from 'ai';
 import { OllamaProvider } from 'ai-sdk-ollama';
+import { systemPrompt } from 'ollama/ollama.types';
 import z from 'zod';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -13,53 +14,11 @@ export class OllamaService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async llama3(prompt: string) {
+  async modelGenerateText(prompt: string) {
+    this.logger.log('[AI]: Operação de IA iniciada');
     const { text } = await generateText({
-      model: this.ollama('llama3.1:8b'),
-      system: `
-        Vôce é um assistente de inteligência artificial de uma plataforma jornalistica que agrega notícias de várias outras gigantes do mercado nacional como G1/Globo e também do mercado internacional como LeMonde, abaixo algumas informações sobre a plataforma.
-
-        Nome: InsightFinder
-        Pais atual: Brasil
-
-        Você tem acesso a duas ferramentas
-        1 - Busca10PrimeirasNoticias - te trás as 10 noticias mais recentes, abaixo a estrutura que a ferramenta retorna
-        {
-          title: string;
-          subtitle: string;
-          publication_date: Date;
-          media: {
-              name: string;
-          };
-        }
-        
-        2 - BuscaPorPalavraChave - busca em toda a tabela de noticias por palavra chave levando em consideração apenas os campos title e subtitle
-
-        Abaixo a estrutura da tabela:
-        model Article {
-        id               Int      @id @default(autoincrement())
-        media_id         Int
-        category_id      Int
-        source_id        Int
-        title            String   @db.Text
-        subtitle         String   @db.Text
-        banner_url       String   @db.Text
-        link             String   @unique @db.Text
-        content          String   @db.Text
-        publication_date DateTime @db.Timestamptz()
-        created_at       DateTime @default(now()) @db.Timestamptz()
-
-        media    Media    @relation(fields: [media_id], references: [id])
-        category Category @relation(fields: [category_id], references: [id])
-        source   Source   @relation(fields: [source_id], references: [id])
-        }
-        
-
-        Regras que você deve seguir para retornar ao usuário
-        1 - SEMPRE EM MARKDOWN PARA UMA MELHOR LEITURA
-        2 - BUSQUE SER OBJETIVO E RESPONDER AS DUVIDAS E/OU PERGUNTAS DO USUÁRIO
-        3 - FORMULE SUA RESPOSTA SEM SE REPETIR, UM TEXTO OBJETIVO E DIRETO
-        `.trim(),
+      model: this.ollama('llama3.1:8b'), // O modelo precisa estar baixado no container do ollama
+      system: systemPrompt,
       prompt,
       tools: {
         Busca10PrimeirasNoticias: tool({
@@ -91,12 +50,28 @@ export class OllamaService {
         }),
         BuscaPorPalavraChave: tool({
           description:
-            'Busca em toda base de noticias filtrando por palavras chaves nos campos title e subtitle',
-          inputSchema: z.object({ palavraChave: z.string().nonempty() }),
-          execute: async ({ palavraChave }) => {
+            'Busca em toda a base de notícias por artigos que contenham TODOS os termos de uma lista de palavras-chave.',
+          inputSchema: z.object({
+            palavrasChave: z
+              .array(z.string())
+              .nonempty()
+              .describe(
+                'Uma lista de palavras-chave essenciais extraídas da pergunta do usuário.',
+              ),
+          }),
+          execute: async ({ palavrasChave }) => {
             const articles = await this.prisma.article.findMany({
               orderBy: {
                 publication_date: 'desc',
+              },
+              // 👇 A MÁGICA DO PRISMA: Usamos 'AND' para garantir que todos os termos estejam presentes
+              where: {
+                AND: palavrasChave.map((palavra) => ({
+                  OR: [
+                    { title: { contains: palavra, mode: 'insensitive' } },
+                    { subtitle: { contains: palavra, mode: 'insensitive' } },
+                  ],
+                })),
               },
               select: {
                 title: true,
@@ -108,33 +83,52 @@ export class OllamaService {
                 },
                 publication_date: true,
               },
-              where: {
-                OR: [
-                  {
-                    title: {
-                      contains: palavraChave,
-                    },
-                  },
-                  {
-                    subtitle: {
-                      contains: palavraChave,
-                    },
-                  },
-                ],
-              },
             });
 
             this.logger.log(
-              `[AIT]:BuscaPorPalavraChave - key: ${palavraChave} | results: ${articles.length}`,
+              `[AIT]:BuscaPorPalavraChave - keys: [${palavrasChave.join(', ')}] | results: ${articles.length}`,
             );
 
             return articles;
           },
         }),
-      },
-      stopWhen: stepCountIs(8),
-    });
+        BuscarNoticiasPorDataEspecifica: tool({
+          description:
+            "Busca notícias publicadas em uma data específica fornecida pelo usuário. Use quando o usuário mencionar um dia, mês e ano exatos (ex: 'notícias de 12 de outubro de 2025', '12/10/25').",
+          inputSchema: z.object({
+            data: z.string().describe('A data exata no formato AAAA-MM-DD.'),
+          }),
+          execute: async ({ data }) => {
+            const gte = new Date(data);
+            gte.setUTCHours(0, 0, 0, 0);
 
-    return { message: text };
+            const lte = new Date(data);
+            lte.setUTCHours(23, 59, 59, 999);
+
+            const articles = await this.prisma.article.findMany({
+              where: { publication_date: { gte, lte } },
+              orderBy: { publication_date: 'desc' },
+              select: {
+                title: true,
+                subtitle: true,
+                media: {
+                  select: {
+                    name: true,
+                  },
+                },
+                publication_date: true,
+              },
+            });
+            this.logger.log(
+              `[AIT]:BuscarNoticiasPorDataEspecifica: "${data}" | results: ${articles.length}`,
+            );
+            return articles;
+          },
+        }),
+      },
+      stopWhen: stepCountIs(6),
+    });
+    this.logger.log('[AI]: Operação de IA finalizada');
+    return text;
   }
 }

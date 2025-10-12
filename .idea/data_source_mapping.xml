@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/e9c7e6b5-b025-4b06-8b0e-031d1134e0fa/ait/Busca10PrimeirasNoticias.sql" value="e9c7e6b5-b025-4b06-8b0e-031d1134e0fa" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/e9c7e6b5-b025-4b06-8b0e-031d1134e0fa/ait/BuscaPorPalavraChave.sql" value="e9c7e6b5-b025-4b06-8b0e-031d1134e0fa" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/e9c7e6b5-b025-4b06-8b0e-031d1134e0fa/counts/categories.sql" value="e9c7e6b5-b025-4b06-8b0e-031d1134e0fa" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/e9c7e6b5-b025-4b06-8b0e-031d1134e0fa/counts/medias.sql" value="e9c7e6b5-b025-4b06-8b0e-031d1134e0fa" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/e9c7e6b5-b025-4b06-8b0e-031d1134e0fa/counts/sources.sql" value="e9c7e6b5-b025-4b06-8b0e-031d1134e0fa" />
+  </component>
+</project>

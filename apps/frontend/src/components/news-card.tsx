@@ -8,7 +8,7 @@ interface NewsCardProps {
 export function NewsCard({ article }: NewsCardProps) {
   const { banner_url, media, subtitle, publication_date, title } = article;
   return (
-    <article className="flex bg-app-foreground rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-all hover:shadow-lg group">
+    <article className="flex bg-app-foreground rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-all hover:shadow-lg group shrink-0">
       <div className="md:flex">
         {banner_url.length > 0 && (
           <div className="md:w-1/3 md:h-full shrink-0 w-full h-48">

@@ -9,6 +9,13 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  app.enableCors({
+    origin: 'http://localhost:3002',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept, Authorization, User-Agent',
+    credentials: true,
+  });
+
   await app.listen(serverPort);
 }
 void bootstrap();
