@@ -1,6 +1,8 @@
 import { AssistantSidePanel } from "@/src/components/assistant-side-panel";
 import { CategoryBar } from "@/src/components/categories-bar";
 import { NewsList } from "@/src/components/news-list";
+import { SearchInput } from "@/src/components/search-input";
+import { SearchTags } from "@/src/components/search-tags";
 import { AppBody } from "@/src/layout/body";
 import { getNewsMetaData } from "@/src/services/news.service";
 import { NewsMetaData } from "@/src/types/news.types";
@@ -13,6 +15,8 @@ export default async function Home() {
   return (
     <AppBody className="flex flex-row">
       <NewsSectionWrapper>
+        <SearchInput />
+        <SearchTags />
         <CategoryBar className="mt-4" />
         <NewsList initialNews={initialNews} />
       </NewsSectionWrapper>

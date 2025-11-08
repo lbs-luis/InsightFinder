@@ -6,7 +6,8 @@ interface NewsCardProps {
   article: NewsMetaData;
 }
 export function NewsCard({ article }: NewsCardProps) {
-  const { banner_url, media, subtitle, publication_date, title } = article;
+  const { banner_url, media, subtitle, publication_date, title, link } =
+    article;
   return (
     <article className="flex bg-app-foreground rounded-xl overflow-hidden border border-gray-700 hover:border-gray-600 transition-all hover:shadow-lg group shrink-0">
       <div className="md:flex">
@@ -42,7 +43,9 @@ export function NewsCard({ article }: NewsCardProps) {
           </p>
 
           <button className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
-            Ler mais →
+            <a href={link} target="_blank" rel="noopener noreferrer">
+              Ler mais →
+            </a>
           </button>
         </div>
       </div>
