@@ -15,6 +15,7 @@ export class NewsController {
   async getNews(
     @Headers('page') pageHeader: string,
     @Headers('category') newsCategory?: string,
+    @Headers('keywords') keyWords?: string,
   ) {
     try {
       const page = parseInt(pageHeader, 10);
@@ -24,8 +25,14 @@ export class NewsController {
           HttpStatus.BAD_REQUEST,
         );
       }
-      if (newsCategory === 'Todos') newsCategory = undefined; // Quando for todos não aplica filtragem
-      return await this.newsService.getPaginatedNews(page, newsCategory);
+
+      const keyWordsArray = this.newsService.parseKeywords(keyWords);
+
+      return await this.newsService.getPaginatedNews(
+        page,
+        newsCategory ?? 'todos',
+        keyWordsArray,
+      );
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

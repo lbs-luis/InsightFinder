@@ -8,23 +8,51 @@ export class NewsService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async getPaginatedNews(page: number, newsCategory?: string) {
+  async getPaginatedNews(
+    page: number,
+    newsCategory: string,
+    keywords: string[],
+  ): Promise<ArticleResponse[]> {
     const skip = (page - 1) * this.pageSize;
 
-    const whereClause: { category_id?: number } = {};
+    let paginateCategory: number | undefined = undefined;
 
-    if (newsCategory) {
+    if (newsCategory.toLocaleLowerCase() !== 'todos') {
       const category = await this.findCategory(newsCategory);
-      whereClause.category_id = category.id;
+      paginateCategory = category.id;
     }
 
-    const articles = await this.prisma.article.findMany({
-      skip: skip,
+    return keywords.length > 0
+      ? await this.paginateNewsByKeyWord(skip, keywords, paginateCategory)
+      : await this.paginateNews(skip, paginateCategory);
+  }
+
+  private async findCategory(category: string) {
+    const categoryUnique = await this.prisma.category.findUnique({
+      where: {
+        name: category,
+      },
+    });
+
+    if (!categoryUnique) {
+      throw new NotFoundException('Categoria não encontrada');
+    }
+
+    return categoryUnique;
+  }
+
+  private async paginateNews(skip: number, category_id?: number) {
+    const category = category_id ? { category_id } : {};
+
+    return await this.prisma.article.findMany({
+      skip,
       take: this.pageSize,
       orderBy: {
         publication_date: 'desc',
       },
-      where: whereClause,
+      where: {
+        ...category,
+      },
       select: {
         id: true,
         title: true,
@@ -45,21 +73,58 @@ export class NewsService {
         },
       },
     });
-
-    return articles as ArticleResponse[];
   }
 
-  private async findCategory(category: string) {
-    const categoryUnique = await this.prisma.category.findUnique({
+  private async paginateNewsByKeyWord(
+    skip: number,
+    keywords: string[],
+    category_id?: number,
+  ) {
+    const category = category_id ? { category_id } : {};
+
+    return await this.prisma.article.findMany({
+      skip,
+      take: this.pageSize,
+      orderBy: {
+        publication_date: 'desc',
+      },
       where: {
-        name: category,
+        ...category,
+        AND: keywords.map((palavra) => ({
+          OR: [
+            { title: { contains: palavra, mode: 'insensitive' } },
+            { subtitle: { contains: palavra, mode: 'insensitive' } },
+          ],
+        })),
+      },
+      select: {
+        id: true,
+        title: true,
+        subtitle: true,
+        link: true,
+        banner_url: true,
+        publication_date: true,
+        media: {
+          select: {
+            name: true,
+            logo_url: true,
+          },
+        },
+        category: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
+  }
 
-    if (!categoryUnique) {
-      throw new NotFoundException('Categoria não encontrada');
-    }
+  parseKeywords(rawKeywords?: string | null): string[] {
+    if (!rawKeywords) return [];
 
-    return categoryUnique;
+    return rawKeywords
+      .split('/')
+      .map((keyword) => keyword.trim())
+      .filter((keyword) => keyword.length > 0);
   }
 }

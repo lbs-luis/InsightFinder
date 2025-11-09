@@ -64,7 +64,6 @@ export class OllamaService {
               orderBy: {
                 publication_date: 'desc',
               },
-              // 👇 A MÁGICA DO PRISMA: Usamos 'AND' para garantir que todos os termos estejam presentes
               where: {
                 AND: palavrasChave.map((palavra) => ({
                   OR: [

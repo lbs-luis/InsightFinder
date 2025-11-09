@@ -4,7 +4,10 @@ import { NewsMetaData } from "@/src/types/news.types";
 import { useCallback, useEffect, useState } from "react";
 import { getNewsMetaData } from "../services/news.service";
 import { useNewsCategoriesStore } from "../store/news-categories";
+import { useSearchBarStore } from "../store/search-bar";
 import { cn } from "../utils/cn";
+import { parseKeywords } from "../utils/keyword-utils";
+import { useQueryParams } from "../utils/use-query-params";
 import { NewsCard } from "./news-card";
 
 interface NewsListProps {
@@ -17,11 +20,17 @@ export function NewsList({ initialNews }: NewsListProps) {
   const [page, setPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { category } = useNewsCategoriesStore();
+  const { isOpen: isSearchBarOpen } = useSearchBarStore();
+  const { get } = useQueryParams();
+
+  const keywords = get("keywords") ?? "";
+
+  const hasParams = parseKeywords(keywords).length > 0;
 
   const handleLoadMore = useCallback(async () => {
     setIsLoading(true);
     const nextPage = page + 1;
-    const newNews = await getNewsMetaData(nextPage, category);
+    const newNews = await getNewsMetaData(nextPage, category, keywords);
 
     if (newNews.length > 0) {
       setNews((prevNews) => [...prevNews, ...newNews]);
@@ -33,7 +42,7 @@ export function NewsList({ initialNews }: NewsListProps) {
     setIsLoading(false);
     setIsNewsEmpty(true);
     return;
-  }, [category, page]);
+  }, [category, keywords, page]);
 
   useEffect(() => {
     const resetAndFetchFirstPage = async () => {
@@ -41,18 +50,33 @@ export function NewsList({ initialNews }: NewsListProps) {
       setNews([]);
       setPage(1);
 
-      const initialNewsForCategory = await getNewsMetaData(1, category);
+      const initialNewsForCategory = await getNewsMetaData(
+        1,
+        category,
+        keywords
+      );
 
       setNews(initialNewsForCategory);
-      setIsNewsEmpty(initialNewsForCategory.length === 0);
+      setIsNewsEmpty(initialNewsForCategory.length < 10);
       setIsLoading(false);
     };
 
     resetAndFetchFirstPage();
-  }, [category]);
+  }, [category, keywords]);
 
   return (
-    <section className="flex flex-col h-[calc(100dvh-155px)] overflow-y-scroll gap-4 p-4 pt-0 mt-4 items-center w-full">
+    <section
+      className={cn(
+        isSearchBarOpen
+          ? hasParams
+            ? "h-[calc((100dvh-2rem)-231px)]"
+            : "h-[calc((100dvh-1rem)-193px)]"
+          : hasParams
+          ? "h-[calc((100dvh-1rem)-193px)]"
+          : "h-[calc(100dvh-155px)]",
+        "flex flex-col overflow-y-scroll gap-4 p-4 pt-0 mt-4 items-center w-full"
+      )}
+    >
       <div className="flex flex-col max-w-7xl w-ful gap-4 w-full">
         {news.length > 0 &&
           news.map((article, index) => (
